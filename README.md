@@ -1,2 +1,3 @@
 # Durian
-A collection of parser combinators
+
+A collection of parser combinators.
