@@ -71,6 +71,23 @@ final class DurianTests: XCTestCase {
     XCTAssertEqual(context, "c")
   }
 
+  func testCombineWithCustomHardFailure() throws {
+    let a = PopFirst<Substring>(if: { $0 == "a" })
+    let b = PopFirst<Substring>(if: { $0 == "b" })
+    let aAndB = a.and(b, else: { _ in TaggedError(tag: 42) })
+
+    let input = "ac"
+    var context = input.suffix(from: input.startIndex)
+    do {
+      _ = try aAndB.parse(&context)
+      XCTFail("expected hard failure")
+    } catch let error {
+      let e = try XCTUnwrap(error as? TaggedError)
+      XCTAssertEqual(e.tag, 42)
+      XCTAssertEqual(context, "c")
+    }
+  }
+
   func testMaybeSucess() {
     let a = PopFirst<Substring>(if: { $0 == "a" })
     let maybeA = maybe(a)
@@ -89,6 +106,34 @@ final class DurianTests: XCTestCase {
     var context = input.suffix(from: input.startIndex)
     XCTAssertEqual(try maybeA.parse(&context), .some(nil))
     XCTAssertEqual(context, "bac")
+  }
+
+  func testMaybeCollapsing() {
+    let a = PopFirst<Substring>(if: { $0 == "a" })
+    let b = PopFirst<Substring>(if: { $0 == "b" })
+    let maybeAAndB = maybe(a).andCollapsingSoftFailures(b)
+
+    let input = "cc"
+    var context = input.suffix(from: input.startIndex)
+    XCTAssertNil(try maybeAAndB.parse(&context))
+    XCTAssertEqual(context, "cc")
+  }
+
+  func testMaybeCollapsingWithCustomHardFailure() throws {
+    let a = PopFirst<Substring>(if: { $0 == "a" })
+    let b = PopFirst<Substring>(if: { $0 == "b" })
+    let maybeAAndB = maybe(a).andCollapsingSoftFailures(b, else: { _ in TaggedError(tag: 42) })
+
+    let input = "ac"
+    var context = input.suffix(from: input.startIndex)
+    do {
+      _ = try maybeAAndB.parse(&context)
+      XCTFail("expected hard failure")
+    } catch let error {
+      let e = try XCTUnwrap(error as? TaggedError)
+      XCTAssertEqual(e.tag, 42)
+      XCTAssertEqual(context, "c")
+    }
   }
 
   func testOneOrMany() {
@@ -198,6 +243,12 @@ final class DurianTests: XCTestCase {
     XCTAssertEqual(try zeroOrManyA.parse(&context), [])
     XCTAssertEqual(context, "bac")
   }
+
+}
+
+struct TaggedError: Error {
+
+  let tag: Int
 
 }
 

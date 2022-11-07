@@ -28,6 +28,15 @@ public struct Maybe<Base: Combinator>: Combinator where Base.Context: Restorable
   public func andCollapsingSoftFailures<Other: Combinator>(
     _ other: Other
   ) -> Apply<Base.Context, (Element, Other.Element)> where Other.Context == Context {
+    andCollapsingSoftFailures(other, else: { _ in HardFailure() })
+  }
+
+  /// Creates a combinator that applies `self` and then `other` without committing unless either
+  /// `self` or `other` did, producing hard failures with `makeHardFailure`.
+  public func andCollapsingSoftFailures<Other: Combinator>(
+    _ other: Other,
+    else makeHardFailure: @escaping (inout Context) -> Error
+  ) -> Apply<Base.Context, (Element, Other.Element)> where Other.Context == Context {
     Apply({ (context) in
       if let a = try self.parse(&context) {
         if let b = try other.parse(&context) {
@@ -35,7 +44,7 @@ public struct Maybe<Base: Combinator>: Combinator where Base.Context: Restorable
         } else if a == nil {
           return nil
         } else {
-          throw HardFailure()
+          throw makeHardFailure(&context)
         }
       } else {
         return nil

@@ -15,8 +15,8 @@ where First.Context == Second.Context,
   /// The second combinator.
   public let secondCombinator: Second
 
-  /// Creates a combinator that applies `first`, or backtracks and applies `second` if `first`
-  /// returned a soft failure.
+  /// Creates a combinator that applies `first`, or backtracks and applies `second` when `first`
+  /// returns a soft failure.
   public init(_ first: First, or second: Second) {
     self.firstCombinator = first
     self.secondCombinator = second

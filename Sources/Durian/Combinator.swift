@@ -25,14 +25,23 @@ extension Combinator {
     Combine(self, and: other)
   }
 
-  /// Creates a combinator that applies `self`, or backtracks and applies `other` if `self`
-  /// returned a soft failure.
+  /// Creates a combinator that applies `self` and then `other`, producing hard failures with
+  /// `makeHardFailure` when `other` returns a soft failure .
+  public func and<Other: Combinator>(
+    _ other: Other,
+    else makeHardFailure: @escaping (inout Context) -> Error
+  ) -> Combine<Self, Other> {
+    Combine(self, and: other, else: makeHardFailure)
+  }
+
+  /// Creates a combinator that applies `self`, or backtracks and applies `other` when `self`
+  /// return a soft failure.
   public func or<Other: Combinator>(_ other: Other) -> Choose<Self, Other> {
     Choose(self, or: other)
   }
 
-  /// Creates a combinator that applies `self`, or backtracks and applies `other` if `self`
-  /// returned any kind of failure.
+  /// Creates a combinator that applies `self`, or backtracks and applies `other` when `self`
+  /// returns any kind of failure.
   public func orCatch<Other: Combinator>(
     andApply other: Other
   ) -> TryCatch<Self, Other> {

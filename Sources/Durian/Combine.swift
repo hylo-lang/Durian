@@ -13,10 +13,24 @@ where First.Context == Second.Context
   /// The second combinator.
   public let secondCombinator: Second
 
+  /// A closure that produces a hard failure when `secondCombinator` returns a soft failure.
+  public let makeHardFailure: (inout Context) -> Error
+
   /// Creates a combinator that applies `first` and then `second`.
   public init(_ first: First, and second: Second) {
+    self.init(first, and: second, else: { _ in HardFailure() })
+  }
+
+  /// Creates a combinator that applies `first` and then `second`, producing hard failures with
+  /// `makeHardFailure` when `second` returns a soft failure.
+  public init(
+    _ first: First,
+    and second: Second,
+    else makeHardFailure: @escaping (inout Context) -> Error
+  ) {
     self.firstCombinator = first
     self.secondCombinator = second
+    self.makeHardFailure = makeHardFailure
   }
 
   public func parse(_ context: inout Context) throws -> Element? {
@@ -24,7 +38,7 @@ where First.Context == Second.Context
       if let b = try secondCombinator.parse(&context) {
         return (a, b)
       } else {
-        throw HardFailure()
+        throw makeHardFailure(&context)
       }
     } else {
       return nil
