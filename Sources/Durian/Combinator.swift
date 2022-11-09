@@ -34,6 +34,13 @@ extension Combinator {
     Combine(self, and: other, else: makeHardFailure)
   }
 
+  /// Creates a combinator that applies `self` and then the result of `makeNext`.
+  public func bind<Next: Combinator>(
+    _ makeNext: @escaping (Element) throws -> Next
+  ) -> Bind<Self, Next> {
+    Bind(self, and: makeNext)
+  }
+
   /// Creates a combinator that applies `self`, or backtracks and applies `other` when `self`
   /// return a soft failure.
   public func or<Other: Combinator>(_ other: Other) -> Choose<Self, Other> {
@@ -48,7 +55,7 @@ extension Combinator {
     TryCatch(trying: self, orCatchingAndApplying: other)
   }
 
-  /// Creates a combinators that transforms the result of `self`.
+  /// Creates a combinator that transforms the result of `self`.
   public func map<T>(
     _ transform: @escaping (inout Context, Element) throws -> T
   ) -> Transform<Self, T> {

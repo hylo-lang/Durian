@@ -14,6 +14,16 @@ final class DurianTests: XCTestCase {
     XCTAssertEqual(context, "bc")
   }
 
+  func testBind() throws {
+    let a = PopFirst<Substring>(if: { $0 == "a" })
+    let aAndA = a.bind({ (ch) in PopFirst(if: { $0 == ch }) })
+
+    let input = "aab"
+    var context = input.suffix(from: input.startIndex)
+    XCTAssertEqual(try aAndA.parse(&context), "a")
+    XCTAssertEqual(context, "b")
+  }
+
   func testChooseFirst() {
     let a = PopFirst<Substring>(if: { $0 == "a" })
     let b = PopFirst<Substring>(if: { $0 == "b" })
