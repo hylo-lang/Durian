@@ -40,7 +40,7 @@ jobs:
             cmake_build_type: Release
 
           - os: ubuntu-latest
-            spm_configuration: release
+            spm_configuration: debug
 
             swift_test_options: --enable-code-coverage
 
