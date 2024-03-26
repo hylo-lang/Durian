@@ -118,6 +118,3 @@ jobs:
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         fail_ci_if_error: true
-        directory: ${{ github.workspace }}
-        working-directory: ${{ github.workspace }}
-        root_dir: ${{ github.workspace }}
