@@ -111,7 +111,7 @@ jobs:
         done
         # Note: on mac this command might require a leading xcrun.
         llvm-cov export -format="lcov" -instr-profile "$(swift test -c ${{ matrix.spm_configuration }} --show-codecov-path | xargs dirname)"/default.profdata "${bin_params[@]}" > info.lcov
-      shell: /bin/bash
+      shell: /bin/bash -e {0}
 
     - name: Upload coverage reports to Codecov
       if: ${{ contains(matrix.swift_test_options, '--enable-code-coverage') }}
