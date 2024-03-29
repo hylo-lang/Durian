@@ -105,12 +105,10 @@ jobs:
       if: ${{ contains(matrix.swift_test_options, '--enable-code-coverage') }}
       run: |
         set -x
-        files=(*)
-        ls .build/${{ matrix.spm_configuration }}/*.build/** || true
-        ls .build/${{ matrix.spm_configuration }}/*.build || true
-        ls .build/${{ matrix.spm_configuration }} || true
-        ls .build || true
+        dot_os0=(*)
+        ls .build/${{ matrix.spm_configuration }}/*.build/**/*.o
         dot_os=(.build/${{ matrix.spm_configuration }}/*.build/**/*.o)
+        set | grep dot_os
         bin_params=("${dot_os[0]}")
         for o in "${dot_os[@]:1}"; do
           bin_params+=("-object" "${o}")
