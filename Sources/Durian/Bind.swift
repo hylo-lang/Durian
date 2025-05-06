@@ -12,10 +12,10 @@ where Base.Context == Next.Context
   public let base: Base
 
   /// A function that accepts the result of `base` and returns a new combinator.
-  public let makeNext: (Base.Element) throws -> Next
+  public let makeNext: @Sendable (Base.Element) throws -> Next
 
   /// Creates a combinator that applies `base` and then the combinator returned by `makeNext`.
-  public init(_ base: Base, and makeNext: @escaping (Base.Element) throws -> Next) {
+  public init(_ base: Base, and makeNext: @Sendable @escaping (Base.Element) throws -> Next) {
     self.base = base
     self.makeNext = makeNext
   }
