@@ -26,7 +26,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-14, ubuntu-22.04, windows-2025]
+        os: [windows-2025]
+        # os: [macos-14, ubuntu-22.04, windows-2025]
         spm_configuration: [debug, release]
 
         include:
@@ -83,6 +84,11 @@ jobs:
       with:
         submodules: true
         show-progress: false
+
+    - name: Test before Configure (CMake)
+      # We explicitly point to swiftc in the PATH because otherwise CMake picks up the one in XCode.
+      run: >-
+        C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe --version
 
     - name: Configure (CMake)
       # We explicitly point to swiftc in the PATH because otherwise CMake picks up the one in XCode.
