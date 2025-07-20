@@ -86,7 +86,7 @@ jobs:
         cmake -GNinja -S . -B .cmake-build
         -DCMAKE_BUILD_TYPE=${{ matrix.cmake_build_type }}
         -DBUILD_TESTING=YES
-        ${{ runner.os == 'macOS' && '-D CMAKE_Swift_COMPILER=swiftc' || '' }}
+        ${{ runner.os == 'macOS' && '-DCMAKE_Swift_COMPILER=$(xcrun -f swiftc) -DCMAKE_OSX_SYSROOT=$(xcrun --show-sdk-path)' || '' }}
 
     - name: Build (CMake)
       run: cmake --build .cmake-build
@@ -101,7 +101,7 @@ jobs:
         cmake -GXcode -S . -B .xcode-build
         -DCMAKE_BUILD_TYPE=${{ matrix.cmake_build_type }}
         -DBUILD_TESTING=YES
-        ${{ runner.os == 'macOS' && '-D CMAKE_Swift_COMPILER=swiftc' || '' }}
+        ${{ runner.os == 'macOS' && '-DCMAKE_Swift_COMPILER=$(xcrun -f swiftc) -DCMAKE_OSX_SYSROOT=$(xcrun --show-sdk-path)' || '' }}
 
         cd .xcode-build
 
