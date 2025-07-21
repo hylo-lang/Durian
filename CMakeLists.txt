@@ -8,6 +8,9 @@ project(Swifty-LLVM
   HOMEPAGE_URL "https://github.com/hylo-lang/GenerateSwiftXCTestMain"
   LANGUAGES C CXX Swift
 )
+
+set(CMAKE_OSX_DEPLOYMENT_TARGET 14.0)
+
 enable_testing()
 list(PREPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
 if (PROJECT_IS_TOP_LEVEL)

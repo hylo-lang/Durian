@@ -1,13 +1,13 @@
 /// A parser combinator.
-public protocol Combinator {
+public protocol Combinator: Sendable {
 
   /// The context from which element are being parsed, typically a stream of tokens.
   ///
   /// - Requires: `Context` must have value semantics.
-  associatedtype Context
+  associatedtype Context: Sendable
 
   /// The element parsed by the combinator.
-  associatedtype Element
+  associatedtype Element: Sendable
 
   /// Attempts to parse a result from `context`.
   func parse(_ context: inout Context) throws -> Element?
@@ -29,14 +29,14 @@ extension Combinator {
   /// `makeHardFailure` when `other` returns a soft failure .
   public func and<Other: Combinator>(
     _ other: Other,
-    else makeHardFailure: @escaping (inout Context) -> Error
+    else makeHardFailure: @Sendable @escaping (inout Context) -> Error
   ) -> Combine<Self, Other> {
     Combine(self, and: other, else: makeHardFailure)
   }
 
   /// Creates a combinator that applies `self` and then the result of `makeNext`.
   public func bind<Next: Combinator>(
-    _ makeNext: @escaping (Element) throws -> Next
+    _ makeNext: @Sendable @escaping (Element) throws -> Next
   ) -> Bind<Self, Next> {
     Bind(self, and: makeNext)
   }
@@ -57,7 +57,7 @@ extension Combinator {
 
   /// Creates a combinator that transforms the result of `self`.
   public func map<T>(
-    _ transform: @escaping (inout Context, Element) throws -> T
+    _ transform: @Sendable @escaping (inout Context, Element) throws -> T
   ) -> Transform<Self, T> {
     Transform(base: self, transform: transform)
   }

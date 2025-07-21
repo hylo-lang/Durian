@@ -35,7 +35,7 @@ public struct Maybe<Base: Combinator>: Combinator where Base.Context: Restorable
   /// `self` or `other` did, producing hard failures with `makeHardFailure`.
   public func andCollapsingSoftFailures<Other: Combinator>(
     _ other: Other,
-    else makeHardFailure: @escaping (inout Context) -> Error
+    else makeHardFailure: @Sendable @escaping (inout Context) -> Error
   ) -> Apply<Base.Context, (Element, Other.Element)> where Other.Context == Context {
     Apply({ (context) in
       if let a = try self.parse(&context) {

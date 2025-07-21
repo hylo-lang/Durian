@@ -1,5 +1,5 @@
 /// A combinator that transforms the result of another one.
-public struct Transform<Base: Combinator, Element>: Combinator {
+public struct Transform<Base: Combinator, Element>: Combinator, Sendable {
 
   public typealias Context = Base.Context
 
@@ -7,7 +7,7 @@ public struct Transform<Base: Combinator, Element>: Combinator {
   public let base: Base
 
   /// The closure that is applied to transform `base`'s result.
-  public let transform: (inout Context, Base.Element) throws -> Element
+  public let transform: @Sendable (inout Context, Base.Element) throws -> Element
 
   public func parse(_ context: inout Context) throws -> Element? {
     if let result = try base.parse(&context) {

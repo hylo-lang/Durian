@@ -1,14 +1,35 @@
-/// A combinator that can be used recursively.
-public struct Recursive<Context, Element>: Combinator {
+import Foundation
 
-  private final class Definition {
+/// A combinator that can be used recursively.
+public struct Recursive<Context, Element>: Combinator, Sendable {
+
+  private final class Definition: @unchecked Sendable {
 
     var make: () -> (inout Context) throws -> Element?
 
     var parse: ((inout Context) throws -> Element?)?
+    
+    /// Lock used for thread-safe initialization of the parse property (TODO - find a better alternative)
+    private let lock = NSLock()
 
     init(make: @escaping () -> (inout Context) throws -> Element?) {
       self.make = make
+    }
+    
+    /// Thread-safe accessor for the parse property
+    func getOrCreateParser() -> (inout Context) throws -> Element? {
+      if let existingParser = parse {
+        return existingParser
+      }
+      
+      lock.lock()
+      defer { lock.unlock() }
+      
+      if parse == nil {
+        parse = make()
+      }
+      
+      return parse!
     }
 
   }
@@ -22,10 +43,8 @@ public struct Recursive<Context, Element>: Combinator {
   }
 
   public func parse(_ context: inout Context) throws -> Element? {
-    if definition.parse == nil {
-      definition.parse = definition.make()
-    }
-    return try definition.parse!(&context)
+    let parser = definition.getOrCreateParser()
+    return try parser(&context)
   }
 
 }

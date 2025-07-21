@@ -2,10 +2,10 @@
 public struct Apply<Context, Element>: Combinator {
 
   /// The action to apply.
-  public let action: (inout Context) throws -> Element?
+  public let action: @Sendable (inout Context) throws -> Element?
 
   /// Creates a combinator applying the specified closure.
-  public init(_ action: @escaping (inout Context) throws -> Element?) {
+  public init(_ action: @Sendable @escaping (inout Context) throws -> Element?) {
     self.action = action
   }
 

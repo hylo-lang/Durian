@@ -1,7 +1,6 @@
 /// A combinator that combines the result of other combinators.
 public struct Combine<First: Combinator, Second: Combinator>: Combinator
-where First.Context == Second.Context
-{
+where First.Context == Second.Context {
 
   public typealias Context = First.Context
 
@@ -14,7 +13,7 @@ where First.Context == Second.Context
   public let secondCombinator: Second
 
   /// A closure that produces a hard failure when `secondCombinator` returns a soft failure.
-  public let makeHardFailure: (inout Context) -> Error
+  public let makeHardFailure: @Sendable (inout Context) -> Error
 
   /// Creates a combinator that applies `first` and then `second`.
   public init(_ first: First, and second: Second) {
@@ -26,7 +25,7 @@ where First.Context == Second.Context
   public init(
     _ first: First,
     and second: Second,
-    else makeHardFailure: @escaping (inout Context) -> Error
+    else makeHardFailure: @Sendable @escaping (inout Context) -> Error
   ) {
     self.firstCombinator = first
     self.secondCombinator = second

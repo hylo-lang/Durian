@@ -1,15 +1,15 @@
 /// A combinator that pops the first element of a stream if it satisfies a predicate.
-public struct PopFirst<Context: Collection>: Combinator
+public struct PopFirst<Context: Collection>: Combinator, Sendable
 where Context == Context.SubSequence
 {
 
   public typealias Element = Context.Element
 
   /// The predicate that popped elements satisfy.
-  public let predicate: (Context.Element) -> Bool
+  public let predicate: @Sendable (Context.Element) -> Bool
 
   /// Creates a combinator that pops the first element of stream if it satisfies `predicate`.
-  public init(if predicate: @escaping (Context.Element) -> Bool) {
+  public init(if predicate: @escaping @Sendable (Context.Element) -> Bool) {
     self.predicate = predicate
   }
 
